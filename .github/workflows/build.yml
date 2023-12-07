@@ -20,7 +20,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build apk --debug --split-per-abi
       - name: Push APK to Releases
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v2
         with:
           artifacts: "build/app/outputs/apk/debug/*.apk"
-          token: "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"
+          token: ${{ secrets.TOKEN }}
