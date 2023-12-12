@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:test_flutter/src/features/Home/Home.dart';
-import 'package:test_flutter/src/features/auth/LoginScreen.dart';
-import 'package:test_flutter/src/features/splash/SplashScreen.dart';
 
 void main() {
   runApp(const MyApp());
