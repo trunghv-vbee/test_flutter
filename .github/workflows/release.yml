@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - '*'
- 
+
 jobs:
   build:
     name: Build Apps
@@ -57,5 +57,5 @@ jobs:
         with:
           tag: ${{ github.ref }}
           name: ${{ github.ref }}
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           artifacts: 'build/app/outputs/apk/release/*.apk,build/ios/iphoneos/app.ipa'
