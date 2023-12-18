@@ -18,13 +18,11 @@ on:
 jobs:
   build:
     name: Build .apk file
-    runs-on: self-hosted
     steps:
       - run: flutter build apk --release --verbose
   Deploy:
     name: Deploy file to AppCenter
     needs: [build]
-    runs-on: self-hosted
     steps:
       - name: AppCenter CLI Action
         uses: charliealbright/appcenter-cli-action@v1.0.1
