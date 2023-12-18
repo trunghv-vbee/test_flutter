@@ -20,7 +20,7 @@ jobs:
     name: Build .apk file
     runs-on: macos-latest
     steps:
-      - run: flutter build apk --release --verbose
+      - run: flutter build apk
   Deploy:
     name: Deploy file to AppCenter
     needs: [build]
