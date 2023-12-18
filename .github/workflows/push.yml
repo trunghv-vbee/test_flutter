@@ -43,3 +43,13 @@ jobs:
         run: |
           flutter build apk
           ls -la
+
+      - name: upload artefact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: trunghv-vbee.ai/APP
+          token: ${{secrets.APP_CENTER_TOKEN}}
+          group: DEV
+          file: app/build/outputs/apk/release/app-release.apk
+          notifyTesters: true
+          debug: false
