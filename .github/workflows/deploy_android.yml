@@ -14,7 +14,7 @@ on:
         description: 'The group that will have access to the version released'
         required: false
         type: string
-        default: '"Collaborators"'
+        default: '"DEV"'
 jobs:
   build:
     name: Build .apk file
@@ -30,4 +30,4 @@ jobs:
         uses: charliealbright/appcenter-cli-action@v1.0.1
         with:
           token: ${{secrets.APPCENTER_API_TOKEN}}
-          command: 'appcenter distribute release -f ${{inputs.file}} --app ${{inputs.name}} --group ${{inputs.group}}'
+          command: 'appcenter distribute distribute groups publish -f ${{inputs.file}} --app ${{inputs.name}} --group ${{inputs.group}}'
