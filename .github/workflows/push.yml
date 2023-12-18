@@ -15,8 +15,8 @@ jobs:
         uses: dcarbone/install-jq-action@v2.0.2
       - uses: subosito/flutter-action@v2
         with:
-          channel: master
-          architecture: x64
+          flutter-version: '3.16.2'
+          channel: 'stable'
       - run: flutter pub get
   setup-appcenter-cli: # must have node and npm installed!
     name: Setup AppCenter CLI
