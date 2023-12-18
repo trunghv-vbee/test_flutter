@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  const environment =
+      String.fromEnvironment('FLAVOR', defaultValue: 'development');
+  await dotenv.load(fileName: '.env.$environment');
   runApp(const MyApp());
 }
 
@@ -32,7 +36,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: MyHomePage(
-        title: 'aaa',
+        title: dotenv.env['BASE_AUTH_URL'] ?? '',
       ),
     );
   }
