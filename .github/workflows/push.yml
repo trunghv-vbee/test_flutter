@@ -6,6 +6,7 @@ on:
 jobs:
   setup-flutter:
     name: Setup Flutter
+    runs-on: self-hosted
     steps:
       - run: echo "🎉 Triggered by a ${{ github.event_name }} on ${{ github.ref }}"
       - name: Check out repository code
@@ -19,6 +20,7 @@ jobs:
       - run: flutter pub get
   setup-appcenter-cli: # must have node and npm installed!
     name: Setup AppCenter CLI
+    runs-on: self-hosted
     steps:
       - name: Install appcenter-cli
         uses: charliealbright/appcenter-cli-action@v1.0.1
