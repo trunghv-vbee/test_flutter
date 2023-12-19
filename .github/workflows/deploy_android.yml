@@ -18,7 +18,7 @@ on:
 jobs:
   build:
     name: Build .apk file
-    runs-on: setup-flutter
+    runs-on: macos-latest
 
     steps:
       - name: Set up Flutter
