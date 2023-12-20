@@ -39,7 +39,7 @@ jobs:
 
       - name: Build Android App
         run: |
-          flutter build apk
+          flutter build apk --dart-define FLAVOR="production"
           ls -la
       - name: AppCenter CLI Action
         uses: charliealbright/appcenter-cli-action@v1.0.1
