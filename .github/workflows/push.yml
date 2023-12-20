@@ -3,7 +3,7 @@ name: Push
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -41,3 +41,8 @@ jobs:
         run: |
           flutter build apk
           ls -la
+      - name: AppCenter CLI Action
+        uses: charliealbright/appcenter-cli-action@v1.0.1
+        with:
+          token: ${{secrets.APPCENTER_API_TOKEN}}
+          command: 'appcenter distribute distribute groups publish -f build/app/outputs/apk/release/*.apk --app trunghv-vbee.ai/APP --group DEV'
