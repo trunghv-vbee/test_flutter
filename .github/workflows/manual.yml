@@ -8,15 +8,12 @@ on:
       environment:
         description: 'The environment to deploy to'
         required: false
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
+        default: 'development'
         type: choice
         options:
-          - info
-          - warning
-          - debug
+          - development
+          - staging
+          - production
 
 jobs:
   build:
