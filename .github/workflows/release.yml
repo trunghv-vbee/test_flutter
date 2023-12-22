@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     name: Build Apps
+    permissions: write-all
     runs-on: macos-latest
     steps:
       - name: Check out code
