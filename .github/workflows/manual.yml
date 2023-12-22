@@ -9,6 +9,15 @@ on:
       environment:
         description: 'The environment to deploy to'
         required: false
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
 
 jobs:
   build:
