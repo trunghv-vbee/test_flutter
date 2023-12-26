@@ -9,10 +9,10 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>vn.vbee.tts</key>
-        <string>provisioningProfiles name </string>
+        <string>Vbee TTS Dev</string>
     </dict>
     <key>signingCertificate</key>
-    <string>iOS Development</string>
+    <string>iPhone Developer</string>
     <key>signingStyle</key>
     <string>manual</string>
     <key>stripSwiftSymbols</key>
