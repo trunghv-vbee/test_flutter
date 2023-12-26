@@ -36,18 +36,9 @@ jobs:
       - name: Run Tests
         run: flutter test
 
-  setup-appcenter-cli: # must have node and npm installed!
-    name: Setup AppCenter CLI
-    runs-on: macos-latest
-    steps:
-      - name: Install appcenter-cli
-        uses: charliealbright/appcenter-cli-action@v1.0.1
-        with:
-          token: ${{ secrets.APPCENTER_API_TOKEN }}
-          command: 'appcenter help'
   deploy_iOS:
     name: Deploy iOS
-    needs: [setup-flutter, setup-appcenter-cli]
+    needs: [setup-flutter]
     uses: ./.github/workflows/deploy_ios.yml
     with:
       file: 'build/app/outputs/apk/release/test_flutter.ipa'
@@ -56,7 +47,7 @@ jobs:
       name: 'trunghv-vbee.ai/APP-IOS'
   deploy_android:
     name: Deploy Android
-    needs: [setup-flutter, setup-appcenter-cli]
+    needs: [setup-flutter]
     uses: ./.github/workflows/deploy_android.yml
     secrets: inherit
     with:
