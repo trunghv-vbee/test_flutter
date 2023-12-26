@@ -109,7 +109,7 @@ jobs:
       - name: AppCenter deploy ios
         uses: charliealbright/appcenter-cli-action@v1.0.1
         with:
-          token: ${{secrets.APPCENTER_API_TOKEN}}
+          token: ${{secrets.APPCENTER_API_TOKEN_IOS}}
           command: 'appcenter distribute release -f build/ios/ipa/test_flutter.ipa --app trunghv-vbee.ai/APP-IOS --group DEV'
 
 
