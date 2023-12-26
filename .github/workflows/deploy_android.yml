@@ -18,6 +18,8 @@ on:
 jobs:
   build:
     name: Build .apk file
+    runs-on: macos-latest
+
     steps:
       - name: Download Android keystore
         id: android_keystore
@@ -41,6 +43,7 @@ jobs:
   Deploy:
     name: Deploy file to AppCenter
     needs: [build]
+    runs-on: macos-latest
     steps:
       - name: AppCenter CLI Action
         uses: charliealbright/appcenter-cli-action@v1.0.1
