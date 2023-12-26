@@ -23,7 +23,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v1
 
-
+      - name: Setup Certificate
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
