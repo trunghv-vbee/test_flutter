@@ -69,48 +69,47 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      #      - name: Generate JSON serialization code for models
-      #        run: flutter pub run build_runner build --delete-conflicting-outputs
-      #
-      #      - name: Run flutter analyzer
-      #        run: flutter analyze
-      #
-      #      - name: Run Tests
-      #        run: flutter test
-      #      - name: Download Android keystore
-      #        id: android_keystore
-      #        uses: timheuer/base64-to-file@v1.0.3
-      #        with:
-      #          fileName: upload-keystore.keystore
-      #          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
-      #      - name: Create key.properties
-      #        run: |
-      #          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
-      #          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
-      #          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-      #          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-      #      - name: Build Android App
-      #        run: |
-      #          flutter build apk --dart-define FLAVOR="${{ github.event.inputs.environment }}"
-      #          ls -la
+      - name: Generate JSON serialization code for models
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run flutter analyzer
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test
+        
+      - name: Download Android keystore
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1.0.3
+        with:
+          fileName: upload-keystore.keystore
+          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+          - name: Build Android App
+          run: |
+          flutter build apk --dart-define FLAVOR="${{ github.event.inputs.environment }}"
+          ls -la
+
       - name: Build iOS App
         run: |
           flutter build ipa --export-method development --dart-define FLAVOR="${{ github.event.inputs.environment }}"
-          cd build/ios/iphoneos
-          mkdir Payload
-          cd Payload
-          ln -s ../Runner.app
-          cd ..
-          zip -r app.ipa Payload
-      #      - name: AppCenter CLI Action
-      #        uses: charliealbright/appcenter-cli-action@v1.0.1
-      #        with:
-      #          token: ${{secrets.APPCENTER_API_TOKEN}}
-      #          command: 'appcenter distribute release -f build/app/outputs/flutter-apk/app-release.apk --app trunghv-vbee.ai/APP --group DEV'
-      - name: AppCenter CLI Action
+
+      - name: AppCenter upload file apk
         uses: charliealbright/appcenter-cli-action@v1.0.1
         with:
           token: ${{secrets.APPCENTER_API_TOKEN}}
-          command: 'appcenter distribute release -f build/ios/iphoneos/app.ipa --app trunghv-vbee.ai/APP-IOS --group DEV'
+          command: 'appcenter distribute release -f build/app/outputs/flutter-apk/app-release.apk --app trunghv-vbee.ai/APP --group DEV'
+
+      - name: AppCenter upload file ipa
+        uses: charliealbright/appcenter-cli-action@v1.0.1
+        with:
+          token: ${{secrets.APPCENTER_API_TOKEN}}
+          command: 'appcenter distribute release -f build/ios/ipa/*.ipa --app trunghv-vbee.ai/APP-IOS --group DEV'
 
 
