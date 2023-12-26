@@ -38,7 +38,7 @@ jobs:
 
   deploy_iOS:
     name: Deploy iOS
-    needs: setup-flutter
+    needs: [setup-flutter]
     uses: ./.github/workflows/deploy_ios.yml
     secrets: inherit
     with:
