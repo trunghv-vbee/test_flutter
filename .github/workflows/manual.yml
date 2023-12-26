@@ -77,7 +77,7 @@ jobs:
 
       - name: Run Tests
         run: flutter test
-        
+
       - name: Download Android keystore
         id: android_keystore
         uses: timheuer/base64-to-file@v1.0.3
@@ -91,8 +91,8 @@ jobs:
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          - name: Build Android App
-          run: |
+      - name: Build Android App
+        run: |
           flutter build apk --dart-define FLAVOR="${{ github.event.inputs.environment }}"
           ls -la
 
