@@ -22,8 +22,6 @@ on:
 jobs:
   build:
     name: Build .apk file
-    runs-on: self-hosted
-
     steps:
       - name: Setup Certificate ios
         env:
@@ -62,7 +60,6 @@ jobs:
   Deploy:
     name: Deploy file to AppCenter
     needs: [build]
-    runs-on: self-hosted
     steps:
       - name: AppCenter CLI Action
         uses: charliealbright/appcenter-cli-action@v1.0.1
