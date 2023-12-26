@@ -110,6 +110,6 @@ jobs:
         uses: charliealbright/appcenter-cli-action@v1.0.1
         with:
           token: ${{secrets.APPCENTER_API_TOKEN}}
-          command: 'appcenter distribute release -f build/ios/ipa/*.ipa --app trunghv-vbee.ai/APP-IOS --group DEV'
+          command: 'appcenter distribute release -f build/ios/ipa/test_flutter.ipa --app trunghv-vbee.ai/APP-IOS --group DEV'
 
 
