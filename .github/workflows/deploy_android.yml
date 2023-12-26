@@ -21,14 +21,25 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - name: Download Android keystore
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1.0.3
         with:
-          flutter-version: '3.16.2'
-          channel: 'stable'
-      - name: Install pub Dependencies
-        run: flutter pub get
-      - run: flutter build apk
+          fileName: upload-keystore.keystore
+          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+
+      - name: Build Android App
+        run: |
+          flutter build apk --dart-define FLAVOR="${{ github.event.inputs.environment }}"
+          ls -la
+
   Deploy:
     name: Deploy file to AppCenter
     needs: [build]
@@ -37,5 +48,5 @@ jobs:
       - name: AppCenter CLI Action
         uses: charliealbright/appcenter-cli-action@v1.0.1
         with:
-          token: ${{secrets.APPCENTER_API_TOKEN}}
+          token: ${{secrets.APPCENTER_API_TOKEN_ANDROID}}
           command: 'appcenter distribute distribute groups publish -f ${{inputs.file}} --app ${{inputs.name}} --group ${{inputs.group}}'

@@ -1,26 +1,19 @@
-name: Push
-
-#on:
-#  push:
-#    branches:
-#      - main
-
+name: Deploy App on AppCenter
+on:
+  push:
+    branches:
+      - main
 jobs:
-  build:
-    name: Build Apps
+  setup-flutter:
+    name: Setup Flutter
     runs-on: macos-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: "12.x"
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v1
+      - run: echo "🎉 Triggered by a ${{ github.event_name }} on ${{ github.ref }}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Install jq
+        uses: dcarbone/install-jq-action@v2.0.2
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.16.2'
           channel: 'stable'
@@ -37,18 +30,29 @@ jobs:
       - name: Run Tests
         run: flutter test
 
-      - name: Build Android App
-        run: |
-          flutter build apk --dart-define FLAVOR="production"
-          ls -la
-      - name: AppCenter CLI Action
+  setup-appcenter-cli: # must have node and npm installed!
+    name: Setup AppCenter CLI
+    runs-on: macos-latest
+    steps:
+      - name: Install appcenter-cli
         uses: charliealbright/appcenter-cli-action@v1.0.1
         with:
-          token: ${{secrets.APPCENTER_API_TOKEN}}
-          command: 'appcenter distribute release -f build/app/outputs/flutter-apk/app-release.apk --app trunghv-vbee.ai/APP --group DEV'
-
-      - name: AppCenter CLI Action
-        uses: charliealbright/appcenter-cli-action@v1.0.1
-        with:
-          token: ${{secrets.APPCENTER_API_TOKEN}}
-          command: 'appcenter distribute release -f build/ios/iphoneos/app.ipa --app trunghv-vbee.ai/APP --group DEV'
+          token: ${{ secrets.APPCENTER_API_TOKEN }}
+          command: 'appcenter help'
+  deploy_iOS:
+    name: Deploy iOS
+    needs: [setup-flutter, setup-appcenter-cli]
+    uses: ./.github/workflows/deploy_ios.yml
+    with:
+      file: 'build/app/outputs/apk/release/test_flutter.ipa'
+      export_file: 'ios/export_development.plist'
+      secrets: inherit
+      name: 'trunghv-vbee.ai/APP-IOS'
+  deploy_android:
+    name: Deploy Android
+    needs: [setup-flutter, setup-appcenter-cli]
+    uses: ./.github/workflows/deploy_android.yml
+    secrets: inherit
+    with:
+      file: 'build/app/outputs/flutter-apk/app-release.apk'
+      name: 'trunghv-vbee.ai/APP'
