@@ -27,24 +27,29 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      #      - name: Generate JSON serialization code for models
-      #        run: flutter pub run build_runner build --delete-conflicting-outputs
-      #
-      #      - name: Run flutter analyzer
-      #        run: flutter analyze
-      #
-      #      - name: Run Tests
-      #        run: flutter test
+  #      - name: Generate JSON serialization code for models
+  #        run: flutter pub run build_runner build --delete-conflicting-outputs
+  #
+  #      - name: Run flutter analyzer
+  #        run: flutter analyze
+  #
+  #      - name: Run Tests
+  #        run: flutter test
 
-      - name: Deploy iOS
-        uses: ./.github/workflows/deploy_ios.yml
-        with:
-          file: 'build/app/outputs/apk/release/test_flutter.ipa'
-          export_file: 'ios/export_development.plist'
-          name: 'trunghv-vbee.ai/APP-IOS'
-
-      - name: Deploy Android
-        uses: ./.github/workflows/deploy_android.yml
-        with:
-          file: 'build/app/outputs/flutter-apk/app-release.apk'
-          name: 'trunghv-vbee.ai/APP'
+  deploy_iOS:
+    name: Deploy iOS
+    needs: [setup-flutter]
+    uses: ./.github/workflows/deploy_ios.yml
+    secrets: inherit
+    with:
+      file: 'build/app/outputs/apk/release/test_flutter.ipa'
+      export_file: 'ios/export_development.plist'
+      name: 'trunghv-vbee.ai/APP-IOS'
+  deploy_android:
+    name: Deploy Android
+    needs: [setup-flutter]
+    uses: ./.github/workflows/deploy_android.yml
+    secrets: inherit
+    with:
+      file: 'build/app/outputs/flutter-apk/app-release.apk'
+      name: 'trunghv-vbee.ai/APP'
