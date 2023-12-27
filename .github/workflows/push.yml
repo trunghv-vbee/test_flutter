@@ -92,7 +92,7 @@ jobs:
         with:
           serviceAccountJson: service_account.json
           packageName: vn.vbee.tts
-          releaseFile: build/app/outputs/bundle/release/app-release.aab
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
           whatsNewDirectory: distribution/
 
