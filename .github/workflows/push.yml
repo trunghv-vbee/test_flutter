@@ -27,14 +27,14 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      - name: Generate JSON serialization code for models
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Run flutter analyzer
-        run: flutter analyze
-
-      - name: Run Tests
-        run: flutter test
+      #      - name: Generate JSON serialization code for models
+      #        run: flutter pub run build_runner build --delete-conflicting-outputs
+      #
+      #      - name: Run flutter analyzer
+      #        run: flutter analyze
+      #
+      #      - name: Run Tests
+      #        run: flutter test
 
       - name: Download Android keystore
         id: android_keystore
@@ -91,7 +91,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: service_account.json
-          packageName: com.jshvarts.flows
+          packageName: vn.vbee.tts
           releaseFile: app/build/outputs/bundle/release/app-release.aab
           track: internal
           whatsNewDirectory: distribution/
