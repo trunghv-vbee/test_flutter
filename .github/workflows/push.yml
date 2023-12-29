@@ -90,7 +90,7 @@ jobs:
       - name: Deploy to Alpha
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: service_account.json
+          serviceAccountJson: android/app/service_account.json
           packageName: com.jshvarts.flows
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
