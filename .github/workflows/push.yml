@@ -9,12 +9,10 @@ jobs:
     name: Build Apps
     runs-on: macos-latest
     steps:
-      - id: get_version
-        uses: battila7/get-version-action@v2
-
-      - run: echo ${{ steps.get_version.outputs.version }}
-
-      - run: echo ${{ steps.get_version.outputs.version-without-v }}
+      - name: GitHub Tag Name example
+        run: |
+          echo "Tag name from GITHUB_REF_NAME: $GITHUB_REF_NAME"
+          echo "Tag name from github.ref_name: ${{  github.ref_name }}"
 #      - name: Check out code
 #        uses: actions/checkout@v1
 #
