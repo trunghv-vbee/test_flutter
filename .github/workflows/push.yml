@@ -19,8 +19,10 @@ jobs:
 
           # Commit and tag this change.
           version=`grep 'version: ' pubspec.yaml | sed 's/version: //'`
-          git commit -m "Bump version to $version" pubspec.yaml
-          git push origin HEAD
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Bump version to $version
 #
 #      - name: Set up Java
 #        uses: actions/setup-java@v3
