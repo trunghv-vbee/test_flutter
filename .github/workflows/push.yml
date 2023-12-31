@@ -20,7 +20,7 @@ jobs:
           # Commit and tag this change.
           version=`grep 'version: ' pubspec.yaml | sed 's/version: //'`
           git commit -m "Bump version to $version" pubspec.yaml
-          git push
+          git push origin HEAD
 #
 #      - name: Set up Java
 #        uses: actions/setup-java@v3
