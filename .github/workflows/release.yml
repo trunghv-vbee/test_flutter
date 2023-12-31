@@ -21,7 +21,8 @@ jobs:
 
       - name: Update version
         run: |
-          perl -i -pe 's/^(version:\s+)(\d+\.\d+\.\d+)(\+)(\d+)$/$1.(${{ github.run_id }}).$3.(${{github.run_number}})/e' pubspec.yaml 
+          perl -i -pe 's/^(version:\s+\d+\.\d+\.)(\d+)(\+)(\d+)$/$1.(${{ github.run_id }}).$3.(${{github.run_number}})/e' pubspec.yaml
+          #          perl -i -pe 's/^(version:\s+)(\d+\.\d+\.\d+)(\+)(\d+)$/$1.(${{ github.ref_name }}).$3.(${{github.run_number}})/e' pubspec.yaml
 
           # Commit and tag this change.
           version=`grep 'version: ' pubspec.yaml | sed 's/version: //'`
