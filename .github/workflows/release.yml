@@ -96,14 +96,13 @@ jobs:
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
           mkdir -p ~/private_keys
-          echo -n "$APPSTORE_API_PRIVATE_KEY" | base64 --decode --output ~/private_keys/AuthKey_$APPSTORE_API_KEY_ID.p8
+          echo -n "$APPSTORE_API_PRIVATE_KEY" | base64 --decode --output ~/private_keys/AuthKey_${{ secrets.APPSTORE_API_KEY_ID }}.p8
       - name: Upload app to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
           app-path: build/ios/ipa/test_flutter.ipa
-          issuer-id: $APPSTORE_ISSUER_ID
-          api-key-id: $APPSTORE_API_KEY_ID
-          api-private-key: $APPSTORE_API_PRIVATE_KEY
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
 
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
