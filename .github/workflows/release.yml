@@ -96,6 +96,7 @@ jobs:
           packageName: vn.vbee.tts2
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
+          status: draft
 
       - name: Build iOS App
         run: |
