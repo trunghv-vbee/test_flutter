@@ -118,9 +118,10 @@ jobs:
           rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
 
       - name: Release Apps
+        if: ${{ always() }}
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref }}
           name: ${{ github.ref }}
           token: ${{ secrets.GH_TOKEN }}
-          artifacts: 'build/app/outputs/apk/release/*.apk,build/ios/iphoneos/app.ipa'
+          artifacts: 'build/app/outputs/bundle/release/*.apk,build/ios/ipa/*.ipa'
