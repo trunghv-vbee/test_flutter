@@ -100,7 +100,7 @@ jobs:
       - name: Upload app to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
-          app-path: build/ios/ipa/vbee_tts_app.ipa
+          app-path: build/ios/ipa/*.ipa
           issuer-id: $APPSTORE_ISSUER_ID
           api-key-id: $APPSTORE_API_KEY_ID
           api-private-key: ~/private_keys/AuthKey_$APPSTORE_API_KEY_ID.p8
