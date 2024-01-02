@@ -76,15 +76,15 @@ jobs:
       #          # apply provisioning profile
       #          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
       #          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-      #
-      #      - name: Create key.properties
-      #        run: |
-      #          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
-      #          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
-      #          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-      #          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-      #
-      #
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+      
+
       #      - name: Build iOS App
       #        run: |
       #          flutter build ipa --export-options-plist ios/export_distribution.plist
@@ -110,12 +110,12 @@ jobs:
           ls -la
 
       - name: Create service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+        run: echo -n "${{ secrets.SERVICE_ACCOUNT_JSON }}" | base64 --decode --output android/app/service_account.json
 
       - name: Deploy to Internal google play store
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          serviceAccountJson: android/app/service_account.json
           packageName: vn.vbee.tts
           releaseFile: app/build/outputs/bundle/release/app-release.aab
           track: internal
