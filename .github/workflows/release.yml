@@ -48,12 +48,6 @@ jobs:
           fileName: upload-keystore.keystore
           encodedString: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Clean up keychain and provisioning profile
-        if: ${{ always() }}
-        run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
-          
       - name: Setup Certificate ios
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DISTRIBUTION_BASE64 }}
@@ -110,6 +104,12 @@ jobs:
           issuer-id: $APPSTORE_ISSUER_ID
           api-key-id: $APPSTORE_API_KEY_ID
           api-private-key: ~/private_keys/AuthKey_$APPSTORE_API_KEY_ID.p8
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
 
       - name: Build Android App
         run: |
