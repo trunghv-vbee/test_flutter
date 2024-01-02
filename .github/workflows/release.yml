@@ -41,12 +41,6 @@ jobs:
       - name: Run Tests
         run: flutter test
 
-      - name: Download Android keystore
-        id: android_keystore
-        uses: timheuer/base64-to-file@v1.0.3
-        with:
-          fileName: upload-keystore.keystore
-          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
 
       - name: Setup Certificate ios
         env:
@@ -77,9 +71,13 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+      - name: Download Android keystore
+        run: |
+          echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode -o android/app/upload-keystore.keystore
+
       - name: Create key.properties
         run: |
-          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storeFile=upload-keystore.keystore" > android/key.properties
           echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
@@ -99,7 +97,7 @@ jobs:
           packageName: vn.vbee.tts2
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
-          
+
       - name: Build iOS App
         run: |
           flutter build ipa --export-options-plist ios/export_distribution.plist
