@@ -116,6 +116,15 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: android/app/service_account.json
-          packageName: vn.vbee.tts
+          packageName: vn.vbee.tts2
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           track: internal
+
+
+      - name: Release Apps
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref }}
+          name: ${{ github.ref }}
+          token: ${{ secrets.GH_TOKEN }}
+          artifacts: 'build/app/outputs/apk/release/*.apk,build/ios/iphoneos/app.ipa'
