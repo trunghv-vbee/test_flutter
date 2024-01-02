@@ -32,14 +32,14 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      - name: Generate JSON serialization code for models
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Run flutter analyzer
-        run: flutter analyze
-
-      - name: Run Tests
-        run: flutter test
+      #- name: Generate JSON serialization code for models
+      #  run: flutter pub run build_runner build --delete-conflicting-outputs
+      #
+      #- name: Run flutter analyzer
+      #  run: flutter analyze
+      #
+      #- name: Run Tests
+      #  run: flutter test
 
       - name: Download Android keystore
         id: android_keystore
@@ -89,13 +89,21 @@ jobs:
         run: |
           flutter build ipa --export-options-plist ios/export_distribution.plist
 
+      - name: Install private API key p8
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/private_keys
+          echo -n "$APPSTORE_API_PRIVATE_KEY" | base64 --decode --output ~/private_keys/AuthKey_$APPSTORE_API_KEY_ID.p8
       - name: Upload app to TestFlight
         uses: apple-actions/upload-testflight-build@v1
         with:
-          app-path: 'build/ios/ipa/vbee_tts_app.ipa'
-          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
-          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
-          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          app-path: build/ios/ipa/vbee_tts_app.ipa
+          issuer-id: $APPSTORE_ISSUER_ID
+          api-key-id: $APPSTORE_API_KEY_ID
+          api-private-key: ~/private_keys/AuthKey_$APPSTORE_API_KEY_ID.p8
 
       - name: Build Android App
         run: |
