@@ -48,61 +48,61 @@ jobs:
           fileName: upload-keystore.keystore
           encodedString: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Setup Certificate ios
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DISTRIBUTION_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_DISTRIBUTION_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
-
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # apply provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: Create key.properties
-        run: |
-          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
-          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-
-
-      - name: Build iOS App
-        run: |
-          flutter build ipa --export-options-plist ios/export_distribution.plist
-
-      - name: Install private API key p8
-        run: |
-          mkdir -p ~/private_keys
-          echo -n "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 --decode --output ~/private_keys/AuthKey_${{ secrets.APPSTORE_API_KEY_ID }}.p8
-      - name: Upload app to TestFlight
-        run: |
-          xcrun altool --upload-app --type ios -f build/ios/ipa/*.ipa --apiKey ${{ secrets.APPSTORE_API_KEY_ID }}  --apiIssuer ${{ secrets.APPSTORE_ISSUER_ID }}
-
-
-      - name: Clean up keychain and provisioning profile
-        if: ${{ always() }}
-        run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+      #      - name: Setup Certificate ios
+      #        env:
+      #          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DISTRIBUTION_BASE64 }}
+      #          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      #          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_DISTRIBUTION_BASE64 }}
+      #          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      #        run: |
+      #          # create variables
+      #          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+      #          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+      #          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+      #
+      #          # import certificate and provisioning profile from secrets
+      #          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+      #          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+      #
+      #          # create temporary keychain
+      #          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+      #          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #
+      #          # import certificate to keychain
+      #          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+      #          security list-keychain -d user -s $KEYCHAIN_PATH
+      #
+      #          # apply provisioning profile
+      #          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      #
+      #      - name: Create key.properties
+      #        run: |
+      #          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+      #          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+      #          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+      #          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+      #
+      #
+      #      - name: Build iOS App
+      #        run: |
+      #          flutter build ipa --export-options-plist ios/export_distribution.plist
+      #
+      #      - name: Install private API key p8
+      #        run: |
+      #          mkdir -p ~/private_keys
+      #          echo -n "${{ secrets.APPSTORE_API_PRIVATE_KEY }}" | base64 --decode --output ~/private_keys/AuthKey_${{ secrets.APPSTORE_API_KEY_ID }}.p8
+      #      - name: Upload app to TestFlight
+      #        run: |
+      #          xcrun altool --upload-app --type ios -f build/ios/ipa/*.ipa --apiKey ${{ secrets.APPSTORE_API_KEY_ID }}  --apiIssuer ${{ secrets.APPSTORE_ISSUER_ID }}
+      #
+      #
+      #      - name: Clean up keychain and provisioning profile
+      #        if: ${{ always() }}
+      #        run: |
+      #          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+      #          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
 
       - name: Build Android App
         run: |
@@ -115,7 +115,7 @@ jobs:
       - name: Deploy to Internal google play store
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: service_account.json
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: vn.vbee.tts
           releaseFile: app/build/outputs/bundle/release/app-release.aab
           track: internal
