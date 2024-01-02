@@ -61,8 +61,8 @@ jobs:
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_DISTRIBUTION_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_DISTRIBUTION_BASE64" | base64 --decode -o $PP_PATH
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -89,11 +89,13 @@ jobs:
         run: |
           flutter build ipa --export-options-plist ios/export_distribution.plist
 
-      - name: AppCenter deploy ios
-        uses: charliealbright/appcenter-cli-action@v1.0.1
+      - name: Upload app to TestFlight
+        uses: apple-actions/upload-testflight-build@v1
         with:
-          token: ${{secrets.APPCENTER_API_TOKEN_IOS}}
-          command: "appcenter distribute release -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}"
+          app-path: 'build/ios/ipa/vbee_tts_app.ipa'
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Build Android App
         run: |
@@ -103,11 +105,10 @@ jobs:
       - name: Create service_account.json
         run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
 
-      - name: Deploy to Alpha
+      - name: Deploy to Internal google play store
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: service_account.json
-          packageName: com.jshvarts.flows
+          packageName: vn.vbee.tts
           releaseFile: app/build/outputs/bundle/release/app-release.aab
           track: internal
-          whatsNewDirectory: distribution/
