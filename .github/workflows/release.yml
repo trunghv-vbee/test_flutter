@@ -76,7 +76,7 @@ jobs:
 
       - name: Create key.properties
         run: |
-          run: echo -n "${{ secrets.KEY_PROPERTIES }}" | base64 --decode --output android/key.properties
+          echo -n "${{ secrets.KEY_PROPERTIES }}" | base64 --decode --output android/key.properties
 
       - name: Build Android App
         run: |
