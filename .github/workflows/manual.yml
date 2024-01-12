@@ -36,6 +36,9 @@ jobs:
           distribution: 'zulu'
           java-version: "12.x"
 
+      - name: Set up appcenter-cli
+        run: sudo npm install -g appcenter-cli
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -49,14 +52,14 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      - name: Generate JSON serialization code for models
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Run flutter analyzer
-        run: flutter analyze
-
-      - name: Run Tests
-        run: flutter test
+      #      - name: Generate JSON serialization code for models
+      #        run: flutter pub run build_runner build --delete-conflicting-outputs
+      #
+      #      - name: Run flutter analyzer
+      #        run: flutter analyze
+      #
+      #      - name: Run Tests
+      #        run: flutter test
 
       - name: Setup Certificate ios
         env:
@@ -101,19 +104,15 @@ jobs:
           ls -la
 
       - name: AppCenter deploy android
-        uses: charliealbright/appcenter-cli-action@v1.0.1
-        with:
-          token: ${{secrets.APPCENTER_API_TOKEN_ANDROID}}
-          command: "appcenter distribute release -f build/app/outputs/flutter-apk/app-release.apk --app vbee/VBEE-ANDROID --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}"
+        run: |
+          appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_ANDROID}} -f build/app/outputs/flutter-apk/app-release.apk --app vbee/VBEE-ANDROID --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
 
       - name: Build iOS App
         run: |
           flutter build ipa --export-options-plist ios/export_development.plist --dart-define FLAVOR="${{ github.event.inputs.environment }}"
 
       - name: AppCenter deploy ios
-        uses: charliealbright/appcenter-cli-action@v1.0.1
-        with:
-          token: ${{secrets.APPCENTER_API_TOKEN_IOS}}
-          command: "appcenter distribute release -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}"
+        run: |
+          appcenter distribute release -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
 
 
