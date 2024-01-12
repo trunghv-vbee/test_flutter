@@ -1,8 +1,8 @@
 name: Deploy App on AppCenter
-#on:
-#  push:
-#    branches:
-#      - main
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -14,8 +14,11 @@ jobs:
 
       - name: Update version
         run: |
-          perl -i -pe 's/^(version:\s+\d+\.\d+\.)(\d+)(\+)(\d+)$/$1.(${{ github.run_id }}).$3.(${{github.run_number}})/e' pubspec.yaml 
-
+          # Get version
+          version=0.0.1+${{ github.run_id }}
+          
+          # Update the pubspec.yaml file with the new version number
+          sed -i '' 's/version: .*/version: $version/' pubspec.yaml
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
@@ -31,73 +34,73 @@ jobs:
       - name: Install pub Dependencies
         run: flutter pub get
 
-      - name: Generate JSON serialization code for models
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Run flutter analyzer
-        run: flutter analyze
-
-      - name: Run Tests
-        run: flutter test
-
-      - name: Download Android keystore
-        id: android_keystore
-        uses: timheuer/base64-to-file@v1.0.3
-        with:
-          fileName: upload-keystore.keystore
-          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
-
-      - name: Setup Certificate ios
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DEVELOPMENT_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_DEVELOPMENT_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_DEVELOPMENT_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_DEVELOPMENT_BASE64" | base64 --decode -o $PP_PATH
-
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # apply provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
-
-      - name: Create key.properties
-        run: |
-          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
-          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-
-      - name: Build Android App
-        run: |
-          flutter build appbundle
-          ls -la
-
-      - name: Create service_account.json
-        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
-
-      - name: Deploy to Alpha
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: service_account.json
-          packageName: vn.vbee.tts
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
-          track: production
+      #      - name: Generate JSON serialization code for models
+      #        run: flutter pub run build_runner build --delete-conflicting-outputs
+      #
+      #      - name: Run flutter analyzer
+      #        run: flutter analyze
+      #
+      #      - name: Run Tests
+      #        run: flutter test
+      #
+      #      - name: Download Android keystore
+      #        id: android_keystore
+      #        uses: timheuer/base64-to-file@v1.0.3
+      #        with:
+      #          fileName: upload-keystore.keystore
+      #          encodedString: ${{ secrets.KEYSTORE_BASE64 }}
+      #
+      #      - name: Setup Certificate ios
+      #        env:
+      #          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DEVELOPMENT_BASE64 }}
+      #          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      #          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_DEVELOPMENT_BASE64 }}
+      #          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      #        run: |
+      #          # create variables
+      #          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+      #          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+      #          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+      #
+      #          # import certificate and provisioning profile from secrets
+      #          echo -n "$BUILD_CERTIFICATE_DEVELOPMENT_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+      #          echo -n "$BUILD_PROVISION_PROFILE_DEVELOPMENT_BASE64" | base64 --decode -o $PP_PATH
+      #
+      #          # create temporary keychain
+      #          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+      #          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+      #
+      #          # import certificate to keychain
+      #          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+      #          security list-keychain -d user -s $KEYCHAIN_PATH
+      #
+      #          # apply provisioning profile
+      #          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      #
+      #      - name: Create key.properties
+      #        run: |
+      #          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+      #          echo "storePassword=${{ secrets.STORE_PASSWORD }}" >> android/key.properties
+      #          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+      #          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+      #
+      #      - name: Build Android App
+      #        run: |
+      #          flutter build appbundle
+      #          ls -la
+      #
+      #      - name: Create service_account.json
+      #        run: echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
+      #
+      #      - name: Deploy to Alpha
+      #        uses: r0adkll/upload-google-play@v1
+      #        with:
+      #          serviceAccountJsonPlainText: service_account.json
+      #          packageName: vn.vbee.tts
+      #          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+      #          track: production
 
       - name: Build iOS App
         run: |
