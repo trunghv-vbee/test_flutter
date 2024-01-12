@@ -2,8 +2,6 @@ name: Manual run
 
 on:
   workflow_dispatch:
-    branches:
-      - master
     inputs:
       environment:
         description: 'The environment to deploy to'
@@ -15,20 +13,20 @@ on:
           - staging
 
 jobs:
-  build:
+  android:
     name: Build Apps
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Update version
+      - name: Update version name and build number app
         run: |
           # Get version
           VERSION=0.0.1+${{ github.run_number }}
 
           # Update the pubspec.yaml file with the new version number
-          sed -i '' "s/version: .*/version: $VERSION/" pubspec.yaml
+          sed -i '' "s/version: .*/version: $VERSION/" pubspec.yaml 
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -40,26 +38,77 @@ jobs:
         run: sudo npm install -g appcenter-cli
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v1
         with:
           flutter-version: '3.16.2'
           channel: 'stable'
-          cache: true
-          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
-          cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' # optional, change this to specify the cache path
-          architecture: x64
 
       - name: Install pub Dependencies
         run: flutter pub get
 
-      #      - name: Generate JSON serialization code for models
-      #        run: flutter pub run build_runner build --delete-conflicting-outputs
-      #
-      #      - name: Run flutter analyzer
-      #        run: flutter analyze
-      #
-      #      - name: Run Tests
-      #        run: flutter test
+      - name: Generate JSON serialization code for models
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run flutter analyzer
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test
+
+      - name: Download Android keystore
+        run: |
+          echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode -o android/app/upload-keystore.keystore
+          echo -n "${{ secrets.KEY_PROPERTIES }}" | base64 --decode --output android/key.properties
+
+      - name: Build Android App
+        run: |
+          flutter build apk --dart-define FLAVOR="${{ github.event.inputs.environment }}"
+
+      - name: AppCenter deploy android
+        run: |
+          appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_ANDROID}} -f build/app/outputs/flutter-apk/app-release.apk --app vbee/VBEE-ANDROID --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
+
+  ios:
+    name: Build Apps
+    runs-on: macos-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Update version name and build number app
+        run: |
+          # Get version
+          VERSION=0.0.1+${{ github.run_number }}
+
+          # Update the pubspec.yaml file with the new version number
+          sed -i '' "s/version: .*/version: $VERSION/" pubspec.yaml 
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: "12.x"
+
+      - name: Set up appcenter-cli
+        run: sudo npm install -g appcenter-cli
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.16.2'
+          channel: 'stable'
+
+      - name: Install pub Dependencies
+        run: flutter pub get
+
+      - name: Generate JSON serialization code for models
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run flutter analyzer
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test
 
       - name: Setup Certificate ios
         env:
@@ -90,29 +139,10 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Download Android keystore
-        run: |
-          echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode -o android/app/upload-keystore.keystore
-
-      - name: Create key.properties
-        run: |
-          echo -n "${{ secrets.KEY_PROPERTIES }}" | base64 --decode --output android/key.properties
-
-      - name: Build Android App
-        run: |
-          flutter build apk --dart-define FLAVOR="${{ github.event.inputs.environment }}"
-          ls -la
-
-      - name: AppCenter deploy android
-        run: |
-          appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_ANDROID}} -f build/app/outputs/flutter-apk/app-release.apk --app vbee/VBEE-ANDROID --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
-
       - name: Build iOS App
         run: |
           flutter build ipa --export-options-plist ios/export_development.plist --dart-define FLAVOR="${{ github.event.inputs.environment }}"
 
       - name: AppCenter deploy ios
         run: |
-          appcenter distribute release -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
-
-
+          appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_IOS}} -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
