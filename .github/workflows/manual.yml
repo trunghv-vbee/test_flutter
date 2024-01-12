@@ -28,7 +28,7 @@ jobs:
           version=0.0.1+${{ github.run_id }}
 
           # Update the pubspec.yaml file with the new version number
-          sed -i '' 's/version: .*/version: $version/' pubspec.yaml
+          sed -i '' 's/version:  $version/' pubspec.yaml
 
       - name: Set up Java
         uses: actions/setup-java@v3
