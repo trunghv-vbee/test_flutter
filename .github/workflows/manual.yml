@@ -57,8 +57,8 @@ jobs:
 
       - name: Download Android keystore
         run: |
-          echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode --output android/app/upload-keystore.keystore
-          echo -n "${{ secrets.KEY_PROPERTIES }}" | base64 --decode --output android/key.properties
+          echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode android/app/upload-keystore.keystore
+          echo -n "${{ secrets.KEY_PROPERTIES }}" | base64 --decode android/key.properties
 
       - name: Build Android App
         run: |
