@@ -14,7 +14,7 @@ on:
 
 jobs:
   android:
-    name: Build Apps
+    name: Build Android
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -69,7 +69,7 @@ jobs:
           appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_ANDROID}} -f build/app/outputs/flutter-apk/app-release.apk --app vbee/VBEE-ANDROID --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
 
   ios:
-    name: Build Apps
+    name: Build ios
     runs-on: macos-latest
     steps:
       - name: Check out code
