@@ -13,8 +13,8 @@ on:
           - staging
 
 jobs:
-  android:
-    name: Build Android
+  setup:
+    name: Set up
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -55,6 +55,11 @@ jobs:
       - name: Run Tests
         run: flutter test
 
+  android:
+    name: Build Android
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
       - name: Download Android keystore
         run: |
           echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode android/app/upload-keystore.keystore
@@ -70,46 +75,9 @@ jobs:
 
   ios:
     name: Build ios
+    needs: [setup]
     runs-on: macos-latest
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Update version name and build number app
-        run: |
-          # Get version
-          VERSION=0.0.1+${{ github.run_number }}
-
-          # Update the pubspec.yaml file with the new version number
-          sed -i '' "s/version: .*/version: $VERSION/" pubspec.yaml 
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: "12.x"
-
-      - name: Set up appcenter-cli
-        run: sudo npm install -g appcenter-cli
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v1
-        with:
-          flutter-version: '3.16.2'
-          channel: 'stable'
-
-      - name: Install pub Dependencies
-        run: flutter pub get
-
-      - name: Generate JSON serialization code for models
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Run flutter analyzer
-        run: flutter analyze
-
-      - name: Run Tests
-        run: flutter test
-
       - name: Setup Certificate ios
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DEVELOPMENT_BASE64 }}
