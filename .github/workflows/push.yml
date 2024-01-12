@@ -11,6 +11,11 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      - name: appcenter-cli
+        run: sudo npm install -g appcenter-cli
+        
+      - name: get version
+        run: appcenter -v
 
       - name: Update version
         run: |
