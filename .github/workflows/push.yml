@@ -73,7 +73,7 @@ jobs:
       - name: Build iOS application
         env:
           FLAVOR: staging
-        run: flutter build ipa --export-options-plist ios/export_distribution.plist --dart-define FLAVOR=$FLAVOR
+        run: flutter build ipa --export-options-plist=ios/export_distribution.plist --dart-define FLAVOR=$FLAVOR
 
       - name: Set up AppCenter CLI
         run: sudo npm install -g appcenter-cli
