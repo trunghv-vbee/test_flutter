@@ -10,8 +10,8 @@
     <string>app-store</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>vn.vbee.tts</key>
-        <string>Vbee TTS</string>
+        <key>vn.vbee.tts2</key>
+        <string>Vbee TTS2</string>
     </dict>
     <key>signingCertificate</key>
     <string>iPhone Distribution</string>
