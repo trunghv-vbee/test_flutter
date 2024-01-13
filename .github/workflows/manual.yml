@@ -63,13 +63,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Update version name and build number app
-        run: |
-          # Get version
-          VERSION=0.0.1+${{ github.run_number }}
-
-          # Update the pubspec.yaml file with the new version number
-          sudo sed -i "s/version: .*/version: $VERSION/" pubspec.yaml 
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -105,14 +98,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-
-      - name: Update version name and build number app
-        run: |
-          # Get version
-          VERSION=0.0.1+${{ github.run_number }}
-
-          # Update the pubspec.yaml file with the new version number
-          sed -i "s/version: .*/version: $VERSION/" pubspec.yaml 
 
       - name: Set up Java
         uses: actions/setup-java@v3
