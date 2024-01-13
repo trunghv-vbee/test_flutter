@@ -18,7 +18,7 @@ jobs:
           TAG_NAME=${{ github.event.release.tag_name }}
 
           # Get version by removing the "v" from the tag name
-          VERSION=${TAG_NAME#v}+${{ github.run_number }}
+          VERSION=0.0.1+${{ github.run_number }}
 
           # Update the pubspec.yaml file with the new version number
           sed -i '' "s/version: .*/version: $VERSION/" pubspec.yaml  
