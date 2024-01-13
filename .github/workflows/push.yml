@@ -3,7 +3,7 @@ name: Development2
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   android:
     name: Build Android
