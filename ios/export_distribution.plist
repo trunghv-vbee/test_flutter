@@ -2,7 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>compileBitcode</key>
+    <key>destination</key>
+    <string>export</string>
+    <key>manageAppVersionAndBuildNumber</key>
     <true/>
     <key>method</key>
     <string>app-store</string>
@@ -19,7 +21,9 @@
     <true/>
     <key>teamID</key>
     <string>85PA7GDWJQ</string>
-    <key>thinning</key>
-    <string>&lt;none&gt;</string>
+    <key>uploadBitcode</key>
+    <false/>
+    <key>uploadSymbols</key>
+    <false/>
 </dict>
 </plist>
