@@ -77,7 +77,7 @@ jobs:
           FLAVOR: staging
           WORKSPACE: ${{ github.workspace }}
         run: |
-          flutter build ipa --release --no-codesign --export-options-plist=ios/ExportDevelopment.plist
+          flutter build ipa --release --no-codesign --export-options-plist=ios/export_development.plist
 
       - name: Set up AppCenter CLI
         run: sudo npm install -g appcenter-cli
