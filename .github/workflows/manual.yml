@@ -60,6 +60,31 @@ jobs:
     needs: [setup]
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Update version name and build number app
+        run: |
+          # Get version
+          VERSION=0.0.1+${{ github.run_number }}
+
+          # Update the pubspec.yaml file with the new version number
+          sudo sed -i "s/version: .*/version: $VERSION/" pubspec.yaml 
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: "12.x"
+
+      - name: Set up appcenter-cli
+        run: sudo npm install -g appcenter-cli
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.16.2'
+          channel: 'stable'
       - name: Download Android keystore
         run: |
           echo -n "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.keystore
@@ -78,6 +103,31 @@ jobs:
     needs: [setup]
     runs-on: macos-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Update version name and build number app
+        run: |
+          # Get version
+          VERSION=0.0.1+${{ github.run_number }}
+
+          # Update the pubspec.yaml file with the new version number
+          sudo sed -i "s/version: .*/version: $VERSION/" pubspec.yaml 
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: "12.x"
+
+      - name: Set up appcenter-cli
+        run: sudo npm install -g appcenter-cli
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.16.2'
+          channel: 'stable'
       - name: Setup Certificate ios
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_DEVELOPMENT_BASE64 }}
