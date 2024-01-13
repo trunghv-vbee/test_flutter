@@ -62,8 +62,7 @@ jobs:
           APP: vbee/VBEE-ANDROID
           GROUP: Development
           FILE_PATH: build/app/outputs/flutter-apk/app-release.apk
-        run: |
-          appcenter distribute release --token $APP_CENTER_ANDROID_API_TOKEN -f $FILE_PATH --app $APP --group $GROUP
+        run: appcenter distribute release --token $APP_CENTER_ANDROID_API_TOKEN -f $FILE_PATH --app $APP --group $GROUP
 
   ios:
     name: Build iOS
@@ -78,7 +77,7 @@ jobs:
           VERSION=0.0.1+${{ github.run_number }}
 
           # Update the pubspec.yaml file with the new version number
-          sudo sed -i "s/version: .*/version: $VERSION/" pubspec.yaml 
+          sed -i '' "s/version: .*/version: $VERSION/" pubspec.yaml 
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v1
@@ -136,5 +135,9 @@ jobs:
         run: sudo npm install -g appcenter-cli
 
       - name: Distribute to AppCenter
-        run: |
-          appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_IOS}} -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group Development
+        env:
+          APP_CENTER_IOS_API_TOKEN: ${{ secrets.APP_CENTER_IOS_API_TOKEN }}
+          APP: vbee/VBEE-IOS
+          GROUP: Development
+          FILE_PATH: build/ios/ipa/vbee_tts_app.ipa
+        run: appcenter distribute release --token $APP_CENTER_IOS_API_TOKEN -f $FILE_PATH --app $APP --group $GROUP
