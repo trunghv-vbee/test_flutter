@@ -149,3 +149,9 @@ jobs:
       - name: AppCenter deploy ios
         run: |
           appcenter distribute release --token ${{secrets.APPCENTER_API_TOKEN_IOS}} -f build/ios/ipa/vbee_tts_app.ipa --app vbee/VBEE-IOS --group ${{ github.event.inputs.environment == 'development' && 'Development' || 'Staging' }}
+
+      - name: Clean up keychain and provisioning profile
+        if: ${{ always() }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
