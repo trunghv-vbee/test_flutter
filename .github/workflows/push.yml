@@ -84,7 +84,7 @@ jobs:
 
       - name: Distribute to AppCenter
         env:
-          APP_CENTER_ANDROID_API_TOKEN: ${{ secrets.APP_CENTER_IOS_API_TOKEN }}
+          APP_CENTER_IOS_API_TOKEN: ${{ secrets.APP_CENTER_IOS_API_TOKEN }}
           APP: trunghv-vbee.ai/APP-IOS
           GROUP: DEV
           FILE_PATH: build/ios/ipa/vbee_tts_app.ipa
