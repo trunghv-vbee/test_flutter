@@ -75,8 +75,14 @@ jobs:
       - name: Build iOS application
         env:
           FLAVOR: staging
-          WORKSPACE: ${{ github.workspace }}
-        run: flutter build ipa --release --export-options-plist=ios/export_distribution.plist
+          WORKSPACE: ios/Runner.xcworkspace
+          ARCHIVE_PATH: ios/Vbee.xcarchive
+          EXPORT_PATH: ios/export
+          EXPORT_OPTIONS_PLIST: ios/export_development.plist
+        run: |
+          xcodebuild archive -workspace $WORKSPACE -scheme Runner clean archive -archivePath $ARCHIVE_PATH -configuration Release -arch arm64
+          xcodebuild -exportArchive  -exportOptionsPlist $EXPORT_OPTIONS_PLIST -exportArchive -archivePath $ARCHIVE_PATH -exportPath $EXPORT_PATH
+
 
       - name: Set up AppCenter CLI
         run: sudo npm install -g appcenter-cli
@@ -86,7 +92,7 @@ jobs:
           APP_CENTER_IOS_API_TOKEN: ${{ secrets.APP_CENTER_IOS_API_TOKEN }}
           APP: trunghv-vbee.ai/APP-IOS
           GROUP: DEV
-          FILE_PATH: build/ios/ipa/vbee_tts_app.ipa
+          FILE_PATH: build/ios/export/test_flutter.ipa
         run: appcenter distribute release --token $APP_CENTER_IOS_API_TOKEN -f $FILE_PATH --app $APP --group $GROUP
 
       - name: Clean up keychain and provisioning profile
