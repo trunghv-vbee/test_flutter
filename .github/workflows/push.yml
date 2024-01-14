@@ -78,7 +78,7 @@ jobs:
           WORKSPACE: ios/Runner.xcworkspace
           ARCHIVE_PATH: build/ios/archive/Runner.xcarchive
           EXPORT_PATH: ios/export
-          EXPORT_OPTIONS_PLIST: ios/export_distribution.plist
+          EXPORT_OPTIONS_PLIST: ios/export_development.plist
         run: |
           flutter build ipa --release --no-codesign
           xcodebuild -exportArchive  -exportOptionsPlist $EXPORT_OPTIONS_PLIST -exportArchive -archivePath $ARCHIVE_PATH -exportPath $EXPORT_PATH
