@@ -92,7 +92,7 @@ jobs:
           APP_CENTER_IOS_API_TOKEN: ${{ secrets.APP_CENTER_IOS_API_TOKEN }}
           APP: trunghv-vbee.ai/APP-IOS
           GROUP: DEV
-          FILE_PATH: ios/export/test_flutter.ipa
+          FILE_PATH: ios/export/*.ipa
         run: appcenter distribute release --token $APP_CENTER_IOS_API_TOKEN -f $FILE_PATH --app $APP --group $GROUP
 
       - name: Clean up keychain and provisioning profile
